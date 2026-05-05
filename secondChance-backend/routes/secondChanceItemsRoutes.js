@@ -23,7 +23,7 @@ const upload = multer({ storage })
 router.get('/', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
-    const collection = db.collection("secondChanceItems")
+    const collection = db.collection('secondChanceItems')
     const secondChanceItems = await collection.find({}).toArray()
     res.json(secondChanceItems)
   } catch (e) {
@@ -36,12 +36,12 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
-    const collection = db.collection("secondChanceItems")
+    const collection = db.collection('secondChanceItems')
     const id = req.params.id
     const secondChanceItem = await collection.findOne({ id })
 
     if (!secondChanceItem) {
-      return res.status(404).send("secondChanceItem not found")
+      return res.status(404).send('secondChanceItem not found')
     }
 
     res.json(secondChanceItem)
@@ -54,15 +54,15 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const db = await connectToDatabase()
-    const collection = db.collection("secondChanceItems")
-    const lastItemQuery = await collection.find().sort({ 'id': -1 }).limit(1)
-    let secondChanceItem = req.body
+    const collection = db.collection('secondChanceItems')
+    const lastItemQuery = await collection.find().sort({ id: -1 }).limit(1)
+    const secondChanceItem = req.body
 
     await lastItemQuery.forEach(item => {
       secondChanceItem.id = (parseInt(item.id) + 1).toString()
     })
-    const date_added = Math.floor(new Date().getTime() / 1000)
-    secondChanceItem.date_added = date_added
+    const dateAdded = Math.floor(new Date().getTime() / 1000)
+    secondChanceItem.date_added = dateAdded
 
     const result = await collection.insertOne(secondChanceItem)
     console.log(result)
@@ -76,13 +76,13 @@ router.post('/', upload.single('file'), async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
-    const collection = db.collection("secondChanceItems")
+    const collection = db.collection('secondChanceItems')
     const id = req.params.id
     const secondChanceItem = await collection.findOne({ id })
 
     if (!secondChanceItem) {
       logger.error('secondChanceItem not found')
-      return res.status(404).json({ error: "secondChanceItem not found" })
+      return res.status(404).json({ error: 'secondChanceItem not found' })
     }
 
     secondChanceItem.category = req.body.category
@@ -99,9 +99,9 @@ router.put('/:id', async (req, res, next) => {
     )
 
     if (updatepreloveItem) {
-      res.json({ "uploaded": "success" })
+      res.json({ uploaded: 'success' })
     } else {
-      res.json({ "uploaded": "failed" })
+      res.json({ uploaded: 'failed' })
     }
   } catch (e) {
     next(e)
@@ -112,17 +112,17 @@ router.put('/:id', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   try {
     const db = await connectToDatabase()
-    const collection = db.collection("secondChanceItems")
+    const collection = db.collection('secondChanceItems')
     const id = req.params.id
     const secondChanceItem = await collection.findOne({ id })
 
     if (!secondChanceItem) {
       logger.error('secondChanceItem not found')
-      return res.status(404).json({ error: "secondChanceItem not found" })
+      return res.status(404).json({ error: 'secondChanceItem not found' })
     }
     await collection.deleteOne({ id })
 
-    res.json({ "deleted": "success" })
+    res.json({ deleted: 'success' })
   } catch (e) {
     next(e)
   }
